@@ -6,16 +6,17 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-import java.util.Collection;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Main {
 
     public static void main(String[] args) {
         WebDriverManager.getInstance(DriverManagerType.CHROME).setup();
         ChromeOptions chromeOptions = new ChromeOptions();
-        chromeOptions.setHeadless(true);
+        // chromeOptions.setHeadless(true);
         WebDriver driver = new ChromeDriver(chromeOptions);
 
         driver.get("https://stadtbibliothek.magdeburg.de/Mein-Konto");
@@ -37,13 +38,26 @@ public class Main {
         rows.remove(0); // Entferne "Alle ausgewählt"
 
         final int TITEL = 2;
-        rows.stream()
+        final int MEDIUM = 4;
+        final int ABGABEDATUM = 6;
+        List<TableRow> tableRows = rows.stream()
                 .map(row -> row.findElements(By.tagName("td")))
-                //.map(td -> td.get(TITEL))
-                .flatMap(Collection::stream)
-                .map(WebElement::getText)
-                .forEach(System.out::println)
-        ;
+                .map(row -> new TableRow(
+                        row.get(TITEL).getText(),
+                        row.get(MEDIUM).getText(),
+                        row.get(ABGABEDATUM).getText()))
+                .collect(Collectors.toList());
+
+        driver.close();
+
+        List<TableRow> heuteAbgeben = tableRows.stream().filter(row -> {
+            String[] dateParts = row.getAbgabedatum().split("\\.");
+
+            LocalDate date = LocalDate.of(Integer.valueOf(dateParts[2]), Integer.valueOf(dateParts[1]), Integer.valueOf(dateParts[0]));
+            return date.isEqual(LocalDate.now());
+        }).collect(Collectors.toList());
+
+        heuteAbgeben.forEach(System.out::println);
 
     }
 

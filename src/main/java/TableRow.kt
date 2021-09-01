@@ -1,0 +1,1 @@
+data class TableRow(val name: String, val medium: String, val abgabedatum: String)
