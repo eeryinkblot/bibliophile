@@ -22,8 +22,8 @@ public class Main {
         WebDriver driver = new ChromeDriver(chromeOptions);
 
         driver.get("https://stadtbibliothek.magdeburg.de/Mein-Konto");
-        fillUsername(driver, "73$9814002");
-        fillPassword(driver, "31.05.1988");
+        fillUsername(driver, "%USERNAME%");
+        fillPassword(driver, "%PASSWORD%");
         login(driver);
 
         getHeuteAbgeben(driver).forEach(System.out::println);
@@ -43,7 +43,7 @@ public class Main {
                 .map(row -> new TableRow(
                         row.get(TITEL).getText(),
                         row.get(MEDIUM).getText(),
-                        row.get(ABGABEDATUM).getText()))
+                        row.get(ABGABEDATUM).getText().replace("Aktuelle Frist: ", "")))
                 .collect(Collectors.toList());
 
         driver.close();
@@ -52,7 +52,7 @@ public class Main {
             String[] dateParts = row.getAbgabedatum().split("\\.");
 
             LocalDate date = LocalDate.of(Integer.valueOf(dateParts[2]), Integer.valueOf(dateParts[1]), Integer.valueOf(dateParts[0]));
-            return date.isEqual(LocalDate.now().plus(6, ChronoUnit.DAYS));
+            return date.isEqual(LocalDate.now());
         }).collect(Collectors.toList());
         return heuteAbgeben;
     }
