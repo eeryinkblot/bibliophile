@@ -8,13 +8,17 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
+
+    public static final String LOGIN_BUTTON = "dnn$ctr362$Login$Login_COP$cmdLogin";
+    public static final String PASSWORD_TEXTFIELD = "dnn$ctr362$Login$Login_COP$txtPassword";
+    public static final String USERNAME_TEXTFIELD = "dnn$ctr362$Login$Login_COP$txtUsername";
+    public static final String CHECKBOX_TABLE = "oclc-patronaccount-checkboxtable";
 
     public static void main(String[] args) {
         WebDriverManager.getInstance(DriverManagerType.CHROME).setup();
@@ -61,33 +65,32 @@ public class Main {
 
         driver.close();
 
-        List<TableRow> heuteAbgeben = tableRows.stream().filter(row -> {
+        return tableRows.stream().filter(row -> {
             String[] dateParts = row.getAbgabedatum().split("\\.");
-
             LocalDate date = LocalDate.of(Integer.valueOf(dateParts[2]), Integer.valueOf(dateParts[1]), Integer.valueOf(dateParts[0]));
             return date.isEqual(LocalDate.now());
         }).collect(Collectors.toList());
-        return heuteAbgeben;
     }
 
     private static void fillUsername(WebDriver driver, String username) {
-        WebElement user = driver.findElement(By.name("dnn$ctr362$Login$Login_COP$txtUsername"));
-        user.sendKeys(username);
+        getElementByName(driver, USERNAME_TEXTFIELD).sendKeys(username);
     }
 
     private static void fillPassword(WebDriver driver, String password) {
-        WebElement pass = driver.findElement(By.name("dnn$ctr362$Login$Login_COP$txtPassword"));
-        pass.sendKeys(password);
+        getElementByName(driver, PASSWORD_TEXTFIELD).sendKeys(password);
     }
 
     private static void login(WebDriver driver) {
-        WebElement login = driver.findElement(By.name("dnn$ctr362$Login$Login_COP$cmdLogin"));
-        login.click();
+        getElementByName(driver, LOGIN_BUTTON).click();
+    }
+
+    private static WebElement getElementByName(WebDriver driver, String txtUsername) {
+        return driver.findElement(By.name(txtUsername));
     }
 
     @NotNull
     private static List<WebElement> getRows(WebDriver driver) {
-        WebElement table = driver.findElement(By.className("oclc-patronaccount-checkboxtable"));
+        WebElement table = driver.findElement(By.className(CHECKBOX_TABLE));
         List<WebElement> rows = table.findElements(By.tagName("tr"));
         rows.remove(0); // Entferne "Alle ausgewählt"
         return rows;
