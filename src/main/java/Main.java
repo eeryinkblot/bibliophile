@@ -33,16 +33,16 @@ public class Main {
 
         final List<TableRow> heuteAbgeben = getHeuteAbgeben(driver);
 
-        Stream<String> nicht_verlängerbar = heuteAbgeben.stream()
-                .filter(abgeben -> abgeben.getVerlängerbar().contains("Nicht verlängerbar"))
+        Stream<String> nicht_verlaengerbar = heuteAbgeben.stream()
+                .filter(abgeben -> abgeben.getVerlaengerbar().contains("Nicht verlängerbar"))
                 .map(abgeben -> "Nicht verlängerbar: " + abgeben.getName());
 
-        Stream<String> verlängerbar = heuteAbgeben.stream()
-                .filter(abgeben -> abgeben.getVerlängerbar().contains("Verlängerbar"))
+        Stream<String> verlaengerbar = heuteAbgeben.stream()
+                .filter(abgeben -> abgeben.getVerlaengerbar().contains("Verlängerbar"))
                 .map(abgeben -> "Verlängerbar: " + abgeben.getName());
 
-        nicht_verlängerbar.forEach(System.out::println);
-        verlängerbar.forEach(System.out::println);
+        nicht_verlaengerbar.forEach(System.out::println);
+        verlaengerbar.forEach(System.out::println);
     }
 
     @NotNull
@@ -50,7 +50,7 @@ public class Main {
         final int TITEL = 2;
         final int MEDIUM = 4;
         final int ABGABEDATUM = 6;
-        final int VERLÄNGERBAR = 7;
+        final int VERLAENGERBAR = 7;
         // Warten bis Login durch ist
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
         List<WebElement> rows = getRows(driver);
@@ -60,7 +60,7 @@ public class Main {
                         row.get(TITEL).getText(),
                         row.get(MEDIUM).getText(),
                         row.get(ABGABEDATUM).getText().replace("Aktuelle Frist: ", ""),
-                        row.get(VERLÄNGERBAR).getText()))
+                        row.get(VERLAENGERBAR).getText()))
                 .collect(Collectors.toList());
 
         driver.close();

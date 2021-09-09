@@ -1,1 +1,1 @@
-data class TableRow(val name: String, val medium: String, val abgabedatum: String, val verlängerbar: String)
+data class TableRow(val name: String, val medium: String, val abgabedatum: String, val verlaengerbar: String)
